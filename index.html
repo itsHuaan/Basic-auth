@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Auth Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden font-sans">
+
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+    <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-10 shadow-lg hidden md:flex shrink-0">
+        <div class="p-6 border-b border-slate-100">
+            <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved"></i> Auth Manager
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">Basic Auth Configuration</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+            <div>
+                <label class="label-text">Server Base URL</label>
+                <input type="text" id="baseUrl" value="http://localhost:8081/auth-service" class="input-field"
+                    placeholder="Base URL" readonly>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                <label class="label-text text-blue-800">Admin Credentials</label>
+                <input type="text" id="authUsername" class="input-field mb-2" placeholder="Username" value="miniapp">
+                <input type="password" id="authPassword" class="input-field" placeholder="Password" value="123456aA@">
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <div class="bg-white border-b border-slate-200 px-6 pt-4 flex gap-6 overflow-x-auto shrink-0">
+            <button onclick="switchTab('upsert')" id="tab-upsert" class="tab-btn active">
+                <i class="fa-solid fa-plus-circle mr-1"></i> Upsert
+            </button>
+            <button onclick="switchTab('delete')" id="tab-delete" class="tab-btn">
+                <i class="fa-solid fa-trash mr-1"></i> Delete
+            </button>
+            <button onclick="switchTab('revoke')" id="tab-revoke" class="tab-btn">
+                <i class="fa-solid fa-ban mr-1"></i> Revoke
+            </button>
+        </div>
+
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+            <div class="w-full md:w-1/3 p-6 overflow-y-auto bg-slate-50 border-r border-slate-200">
+
+                <div id="view-upsert" class="form-container">
+                    <h2 class="form-title">Upsert Rule</h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="upUserId" class="input-field" placeholder="User ID (Optional)">
+                            <input type="text" id="upUsername" class="input-field" placeholder="Username">
+                        </div>
+                        <input type="password" id="upPassword" class="input-field" placeholder="Password (New User)">
+                        <div class="divider"></div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="upPathId" class="input-field" placeholder="Path ID (Optional)">
+                            <input type="text" id="upPathPattern" class="input-field"
+                                placeholder="Path Pattern (/api/**)">
+                        </div>
+                        <input type="text" id="upHttpMethods" class="input-field" placeholder="Methods (GET,POST)">
+                        <div class="divider"></div>
+                        <input type="text" id="upRoleNames" class="input-field" placeholder="Roles (ADMIN,USER)">
+                        <button onclick="handleUpsert()" class="btn-primary">Upsert Rule</button>
+                    </div>
+                </div>
+
+                <div id="view-delete" class="form-container hidden">
+                    <h2 class="form-title">Delete Rule</h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="delUserId" class="input-field" placeholder="User ID">
+                            <input type="text" id="delUsername" class="input-field" placeholder="Username">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="delPathId" class="input-field" placeholder="Path ID">
+                            <input type="text" id="delPathPattern" class="input-field" placeholder="Path Pattern">
+                        </div>
+                        <button onclick="handleDelete()" class="btn-danger">Delete Rule</button>
+                    </div>
+                </div>
+
+                <div id="view-revoke" class="form-container hidden">
+                    <h2 class="form-title">Revoke Role</h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="rvUserId" class="input-field" placeholder="User ID">
+                            <input type="text" id="rvUsername" class="input-field" placeholder="Username">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="rvPathId" class="input-field" placeholder="Path ID">
+                            <input type="text" id="rvPathPattern" class="input-field" placeholder="Path Pattern">
+                        </div>
+                        <input type="text" id="rvRoleNames" class="input-field" placeholder="Roles to revoke">
+                        <button onclick="handleRevoke()" class="btn-warning">Revoke Role</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-2/3 bg-white flex flex-col overflow-hidden relative">
+                <div class="p-4 bg-slate-100 border-b border-slate-200 flex justify-between items-center shrink-0">
+                    <span class="font-bold text-slate-700">Configurations</span>
+                    <span id="lastUpdated" class="text-xs text-slate-500 italic">Initializing...</span>
+                </div>
+
+                <div class="flex-1 overflow-auto p-6 space-y-8" id="dataDisplay">
+                    <div class="text-center text-slate-400 mt-20">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3 text-blue-500"></i>
+                        <p>Loading data from server...</p>
+                    </div>
+                </div>
+
+                <div id="actionFooter"
+                    class="p-4 bg-white border-t border-slate-200 shrink-0 flex justify-end gap-3 hidden z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="index.js"></script>
+</body>
+
+</html>
