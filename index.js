@@ -1,10 +1,6 @@
 const getEl = (id) => document.getElementById(id);
 const getVal = (id) => document.getElementById(id).value;
 
-document.addEventListener('DOMContentLoaded', () => {
-    handleGetConfig();
-});
-
 function switchTab(tabName) {
     document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active', 'border-blue-600', 'text-blue-600'));
@@ -222,4 +218,5 @@ function handleGetConfig() {
 
 function handleReload() {
     callApi('/reload-config', 'GET');
+
 }
