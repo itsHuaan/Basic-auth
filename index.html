@@ -20,11 +20,11 @@
 
     <aside
         class="dark:bg-slate-800 dark:border-slate-700 w-80 bg-white border-r border-slate-200 flex flex-col z-10 shadow-lg hidden md:flex shrink-0">
-        <div class="p-6 border-b border-slate-100">
-            <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+            <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved"></i> Auth Manager
             </h1>
-            <p class="text-xs text-slate-500 mt-1">Basic Auth Configuration</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Basic Auth Configuration</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
@@ -35,7 +35,7 @@
             </div>
 
             <div class="dark:bg-slate-900 dark:border-slate-700 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                <label class="label-text text-blue-800">Admin Credentials</label>
+                <label class="label-text text-blue-800 dark:text-blue-300">Admin Credentials</label>
                 <input type="text" id="authUsername" class="input-field mb-2" placeholder="Username" value="miniapp">
                 <input type="password" id="authPassword" class="input-field" placeholder="Password" value="123456aA@">
             </div>
@@ -127,9 +127,10 @@
 
             <div class="dark:bg-slate-800 w-full md:w-2/3 bg-white flex flex-col overflow-hidden relative">
                 <div
-                    class="dark:bg-slate-800 p-4 bg-slate-100 border-b border-slate-200 flex justify-between items-center shrink-0">
-                    <span class="font-bold text-slate-700">Configurations</span>
-                    <span id="lastUpdated" class="text-xs text-slate-500 italic">Initializing...</span>
+                    class="dark:bg-slate-800 p-4 bg-slate-100 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
+                    <span class="font-bold text-slate-700 dark:text-slate-200">Configurations</span>
+                    <span id="lastUpdated"
+                        class="text-xs text-slate-500 dark:text-slate-400 italic">Initializing...</span>
                 </div>
 
                 <div class="flex-1 overflow-auto p-6 space-y-8" id="dataDisplay">
@@ -141,7 +142,7 @@
                 </div>
 
                 <div id="actionFooter"
-                    class="dark:bg-slate-800 p-4 bg-white border-t border-slate-200 shrink-0 flex justify-end gap-3 hidden z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                    class="dark:bg-slate-800 dark:border-slate-700 p-4 bg-white border-t border-slate-200 shrink-0 flex justify-end gap-3 hidden z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] transition-colors duration-300">
                 </div>
             </div>
         </div>

@@ -75,6 +75,7 @@ function renderBadges(list, colorClass) {
 function renderData(data) {
     const display = getEl('dataDisplay');
     const footer = getEl('actionFooter');
+
     display.innerHTML = '';
 
     const users = data.basicAuthUser || [];
@@ -82,8 +83,8 @@ function renderData(data) {
 
     const userSection = document.createElement('div');
     userSection.innerHTML = `
-        <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center"><i class="fa-solid fa-users text-blue-500 mr-2"></i> Users (${users.length})</h3>
-        <div class="dark:bg-slate-800 bg-white rounded-lg border border-slate-200 overflow-hidden mb-8">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center"><i class="fa-solid fa-users text-blue-500 mr-2"></i> Users (${users.length})</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -97,11 +98,11 @@ function renderData(data) {
                     ${users.length ? users.map((u, index) => `
                         <tr>
                             <td class="text-center text-slate-400 font-mono text-xs">${index + 1}</td>
-                            <td class="font-medium text-slate-700">${u.username}</td>
-                            <td class="font-mono text-xs text-slate-500">●●●●●●●●</td>
+                            <td class="font-medium text-slate-700 dark:text-slate-300">${u.username}</td>
+                            <td class="font-mono text-xs text-slate-500">********</td>
                             <td>${renderBadges(u.roles, 'blue')}</td>
                         </tr>
-                    `).join('') : '<tr><td colspan="3" class="text-center italic text-slate-400 py-4">No users found</td></tr>'}
+                    `).join('') : '<tr><td colspan="4" class="text-center italic text-slate-400 py-4">No users found</td></tr>'}
                 </tbody>
             </table>
         </div>
@@ -110,8 +111,8 @@ function renderData(data) {
 
     const ruleSection = document.createElement('div');
     ruleSection.innerHTML = `
-        <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center"><i class="fa-solid fa-shield text-purple-500 mr-2"></i> Rules (${rules.length})</h3>
-        <div class="dark:bg-slate-800 bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center"><i class="fa-solid fa-shield-cat text-purple-500 mr-2"></i> Rules (${rules.length})</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -125,11 +126,11 @@ function renderData(data) {
                     ${rules.length ? rules.map((r, index) => `
                         <tr>
                             <td class="text-center text-slate-400 font-mono text-xs">${index + 1}</td>
-                            <td class="font-mono text-xs text-blue-600 font-bold">${r.path}</td>
+                            <td class="font-mono text-xs text-blue-600 dark:text-blue-400 font-bold">${r.path}</td>
                             <td>${renderBadges(r.methods, 'green')}</td>
                             <td>${renderBadges(r.roles, 'purple')}</td>
                         </tr>
-                    `).join('') : '<tr><td colspan="3" class="text-center italic text-slate-400 py-4">No rules found</td></tr>'}
+                    `).join('') : '<tr><td colspan="4" class="text-center italic text-slate-400 py-4">No rules found</td></tr>'}
                 </tbody>
             </table>
         </div>
@@ -138,10 +139,10 @@ function renderData(data) {
 
     footer.classList.remove('hidden');
     footer.innerHTML = `
-        <button onclick="handleReload()" class="text-xs text-slate-400 hover:text-purple-600 underline px-3">
+        <button onclick="handleReload()" class="text-xs text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 underline px-3">
             Force Server Cache Sync
         </button>
-        <button onclick="handleGetConfig()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow-lg">
+        <button onclick="handleGetConfig()" class="bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow-lg">
             <i class="fa-solid fa-rotate mr-2"></i> Reload Data
         </button>
     `;
