@@ -1,6 +1,37 @@
 const getEl = (id) => document.getElementById(id);
 const getVal = (id) => document.getElementById(id).value;
 
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('theme') === 'dark' ||
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        updateIcon(true);
+    } else {
+        document.documentElement.classList.remove('dark');
+        updateIcon(false);
+    }
+});
+
+function toggleDarkMode() {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        updateIcon(false);
+    } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        updateIcon(true);
+    }
+}
+
+function updateIcon(isDark) {
+    const icon = getEl('darkModeIcon');
+    if (icon) {
+        icon.className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+    }
+}
+
 function switchTab(tabName) {
     document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active', 'border-blue-600', 'text-blue-600'));
@@ -52,7 +83,7 @@ function renderData(data) {
     const userSection = document.createElement('div');
     userSection.innerHTML = `
         <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center"><i class="fa-solid fa-users text-blue-500 mr-2"></i> Users (${users.length})</h3>
-        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden mb-8">
+        <div class="dark:bg-slate-800 bg-white rounded-lg border border-slate-200 overflow-hidden mb-8">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -80,7 +111,7 @@ function renderData(data) {
     const ruleSection = document.createElement('div');
     ruleSection.innerHTML = `
         <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center"><i class="fa-solid fa-shield text-purple-500 mr-2"></i> Rules (${rules.length})</h3>
-        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <div class="dark:bg-slate-800 bg-white rounded-lg border border-slate-200 overflow-hidden">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -120,6 +151,16 @@ function renderData(data) {
 
 function clearActionForms() {
     document.querySelectorAll('[id^="view-"] input').forEach(el => el.value = '');
+}
+
+function getErrorMessage(message) {
+    const rawMessage = message || "Unknown Error";
+    if (rawMessage.includes("security.invalid.basic.crednetials")) {
+        return "Incorrect username or password";
+    } else if (rawMessage.includes("User does not have required roles for path")) {
+        return "You are not allowed to use this feature"
+    }
+    return rawMessage;
 }
 
 async function callApi(endpoint, method, body = null) {
@@ -162,14 +203,15 @@ async function callApi(endpoint, method, body = null) {
         }
 
     } catch (err) {
-        showToast('Request Failed', err.message, 'error');
+        const errorMessage = getErrorMessage(err.message || err.toString());
+        showToast('Request Failed', errorMessage, 'error');
         console.error(err);
         if (endpoint.includes('/get-config')) {
             getEl('dataDisplay').innerHTML = `
-                <div class="text-center text-red-500 mt-10">
-                    <i class="fa-solid fa-circle-exclamation text-3xl mb-2"></i>
+                <div class="text-center text-red-500 h-full flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-circle-exclamation text-5xl mb-3"></i>
                     <p>Failed to load data.</p>
-                    <p class="text-xs font-mono mt-1">${err.message}</p>
+                    <p class="text-xs font-mono mt-1">${errorMessage}</p>
                     <button onclick="handleGetConfig()" class="mt-4 text-blue-600 hover:underline">Try Again</button>
                 </div>
             `;
@@ -218,5 +260,4 @@ function handleGetConfig() {
 
 function handleReload() {
     callApi('/reload-config', 'GET');
-
 }

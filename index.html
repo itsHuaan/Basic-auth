@@ -6,15 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic Auth Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden font-sans">
+<body
+    class="dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 bg-slate-50 text-slate-800 h-screen flex overflow-hidden font-sans">
 
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
 
-    <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-10 shadow-lg hidden md:flex shrink-0">
+    <aside
+        class="dark:bg-slate-800 dark:border-slate-700 w-80 bg-white border-r border-slate-200 flex flex-col z-10 shadow-lg hidden md:flex shrink-0">
         <div class="p-6 border-b border-slate-100">
             <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved"></i> Auth Manager
@@ -25,34 +30,47 @@
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
             <div>
                 <label class="label-text">Server Base URL</label>
-                <input type="text" id="baseUrl" value="http://localhost:8081/auth-service" class="input-field"
+                <input type="text" id="baseUrl" value="http://localhost:3000/auth-service" class="input-field"
                     placeholder="Base URL">
             </div>
 
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <div class="dark:bg-slate-900 dark:border-slate-700 bg-blue-50 p-4 rounded-lg border border-blue-100">
                 <label class="label-text text-blue-800">Admin Credentials</label>
-                <input type="text" id="authUsername" class="input-field mb-2" placeholder="Username">
-                <input type="password" id="authPassword" class="input-field" placeholder="Password">
+                <input type="text" id="authUsername" class="input-field mb-2" placeholder="Username" value="miniapp">
+                <input type="password" id="authPassword" class="input-field" placeholder="Password" value="123456aA@">
             </div>
-            <button onclick="handleGetConfig()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-all shadow-sm"> <i class="fa-solid fa-bolt mr-2"></i> Connect & Load </button>
+
+            <button onclick="handleGetConfig()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-all shadow-sm">
+                <i class="fa-solid fa-bolt mr-2"></i> Connect & Load
+            </button>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col h-full overflow-hidden">
-        <div class="bg-white border-b border-slate-200 px-6 pt-4 flex gap-6 overflow-x-auto shrink-0">
-            <button onclick="switchTab('upsert')" id="tab-upsert" class="tab-btn active">
-                <i class="fa-solid fa-plus-circle mr-1"></i> Upsert
-            </button>
-            <button onclick="switchTab('delete')" id="tab-delete" class="tab-btn">
-                <i class="fa-solid fa-trash mr-1"></i> Delete
-            </button>
-            <button onclick="switchTab('revoke')" id="tab-revoke" class="tab-btn">
-                <i class="fa-solid fa-ban mr-1"></i> Revoke
+        <div
+            class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 pt-4 flex justify-between items-end shrink-0 transition-colors duration-300">
+            <div class="flex gap-6 overflow-x-auto"><button onclick="switchTab('upsert')" id="tab-upsert"
+                    class="tab-btn active">
+                    <i class="fa-solid fa-plus-circle mr-1"></i> Upsert
+                </button>
+                <button onclick="switchTab('delete')" id="tab-delete" class="tab-btn">
+                    <i class="fa-solid fa-trash mr-1"></i> Delete
+                </button>
+                <button onclick="switchTab('revoke')" id="tab-revoke" class="tab-btn">
+                    <i class="fa-solid fa-ban mr-1"></i> Revoke
+                </button>
+            </div>
+            <button onclick="toggleDarkMode()"
+                class="pb-3 text-slate-400 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors outline-none"
+                title="Toggle Dark Mode">
+                <i id="darkModeIcon" class="fa-solid fa-moon text-lg"></i>
             </button>
         </div>
 
         <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-            <div class="w-full md:w-1/3 p-6 overflow-y-auto bg-slate-50 border-r border-slate-200">
+            <div
+                class="dark:bg-slate-900 dark:border-slate-700 w-full md:w-1/3 p-6 overflow-y-auto bg-slate-50 border-r border-slate-200">
 
                 <div id="view-upsert" class="form-container">
                     <h2 class="form-title">Upsert Rule</h2>
@@ -107,15 +125,23 @@
                 </div>
             </div>
 
-            <div class="w-full md:w-2/3 bg-white flex flex-col overflow-hidden relative">
-                <div class="p-4 bg-slate-100 border-b border-slate-200 flex justify-between items-center shrink-0">
+            <div class="dark:bg-slate-800 w-full md:w-2/3 bg-white flex flex-col overflow-hidden relative">
+                <div
+                    class="dark:bg-slate-800 p-4 bg-slate-100 border-b border-slate-200 flex justify-between items-center shrink-0">
                     <span class="font-bold text-slate-700">Configurations</span>
                     <span id="lastUpdated" class="text-xs text-slate-500 italic">Initializing...</span>
                 </div>
-                <div class="flex-1 overflow-auto p-6 space-y-8" id="dataDisplay"> <div class="text-center text-slate-400 mt-20"> <i class="fa-solid fa-plug text-4xl mb-3 text-slate-300"></i> <p>No configuration loaded.</p> <p class="text-xs mt-1">Please enter credentials and click "Connect & Load".</p> </div> </div>
+
+                <div class="flex-1 overflow-auto p-6 space-y-8" id="dataDisplay">
+                    <div class="text-center text-slate-400 h-full flex flex-col justify-center items-center">
+                        <i class="fa-solid fa-plug text-5xl mb-3 text-slate-300"></i>
+                        <p>No configuration loaded.</p>
+                        <p class="text-xs mt-1">Please enter credentials and click "Connect & Load".</p>
+                    </div>
+                </div>
 
                 <div id="actionFooter"
-                    class="p-4 bg-white border-t border-slate-200 shrink-0 flex justify-end gap-3 hidden z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                    class="dark:bg-slate-800 p-4 bg-white border-t border-slate-200 shrink-0 flex justify-end gap-3 hidden z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
                 </div>
             </div>
         </div>
@@ -123,6 +149,4 @@
     <script src="index.js"></script>
 </body>
 
-
 </html>
-
